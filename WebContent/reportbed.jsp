@@ -1,3 +1,4 @@
+<%@page import="javax.swing.text.Document"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*,java.util.*,java.text.*,javax.naming.*,javax.sql.*" %>
@@ -87,6 +88,33 @@ function ActionDeterminator(a) {
 
 <body>
 <%
+//建立狀態對應Map
+	/* String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕","已送出",
+            "10","11","12","13","14","15","16","17","18","19",
+			 "20","21","22","23","24","25","26","27","28","29",
+			 "30","31","32","33","34","35","36","37","38","39",
+			 "40","41","42","43","44","45","46","47","48","49",
+			 "50","51","52","53","54","55","56","57","58","59",
+			 "60","61","62","63","64","65","66","67","68","69",
+			 "70","71","72","73","74","75","76","77","78","79",
+			 "80","81","82","83","84","85","86","87","88","89",
+			 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"}; */
+	Map <Integer,String>map = new HashMap<Integer,String>();
+	map.put(1,"未發送");
+	map.put(2,"交換機已轉送");
+	map.put(3,"已送出");
+	map.put(4,"已到期");
+	map.put(5,"已刪除");
+	map.put(6,"無法送出");
+	map.put(7,"交換機已收到");
+	map.put(8,"未知");
+	map.put(9,"拒絕");
+	map.put(97,"查詢中");
+	map.put(98,"處理中");
+	map.put(99,"排程中");
+
+%>
+<%
 	if (session.getAttribute("mytype")==null){
 		response.sendRedirect("index.html");
 		return;
@@ -131,7 +159,17 @@ if (((String)session.getAttribute("mytype")).equals("99")){
 %>
   <tr>
     <td align="right"><label>狀態</label></td>
-    <td><input name="status" type="text" maxlength="20" /></td>
+    <td><!-- <input name="status" type="text" maxlength="20" /> -->
+   		<select name="status">
+   		<%
+
+   		for(Integer item : map.keySet()){
+   			out.print("<option value="+item+">"+map.get(item)+"</option>");
+   		}
+   		%>
+		    <%-- <option value="1">1</option>--%>
+		</select>
+    </td>
     <td>&nbsp;</td>
   </tr>
   <tr>
@@ -262,17 +300,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	Context env=(Context)ctx.lookup("java:comp/env");
 	DataSource ds =(DataSource)env.lookup("jdbc/SMPPDB");        
 	Connection conn = ds.getConnection();
-	//String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕"};
-	String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕","已送出",
-            "10","11","12","13","14","15","16","17","18","19",
-			 "20","21","22","23","24","25","26","27","28","29",
-			 "30","31","32","33","34","35","36","37","38","39",
-			 "40","41","42","43","44","45","46","47","48","49",
-			 "50","51","52","53","54","55","56","57","58","59",
-			 "60","61","62","63","64","65","66","67","68","69",
-			 "70","71","72","73","74","75","76","77","78","79",
-			 "80","81","82","83","84","85","86","87","88","89",
-			 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"};
+	//String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕"};	
 	try {
 		
 		cc+=" order by s.userid,createtime desc,i.msgid";
@@ -369,7 +397,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
       <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=myFormat.format(fromUser.parse(rs.getString("donetime")))%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="111" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("phoneno")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=statusmsg[rs.getInt("status")]%><u></u><u></u></span></p></td>
+      <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=map.get(rs.getInt("status"))%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>
     </tr>
 <%
