@@ -60,7 +60,7 @@ color: black;
 <script>
 
 function PreCheck(a){
-	String limi = request.getParameter("limite"); 
+	String limi = request.getParameter("limit"); 
 	if (confirm("預定載入數量為"+limi)) {
 		ActionDeterminator(a)
 	}
@@ -124,7 +124,7 @@ if (((String)session.getAttribute("mytype")).equals("99")){
   </tr>
   <tr>
     <td align="right"><label>載入數量</label></td>
-    <td><input name="limite" type="text" maxlength="20" /></td>
+    <td><input name="limit" type="text" maxlength="20" /></td>
     <td>&nbsp;</td>
   </tr>
   <tr>
@@ -189,6 +189,7 @@ String m=request.getParameter("msgid");
 String f=request.getParameter("dfrom");
 String t=request.getParameter("dto");
 String s=request.getParameter("status");
+String l=request.getParameter("limit");
 SimpleDateFormat fromUser = new SimpleDateFormat("yyyyMMddHHmmss");
 SimpleDateFormat fromInput = new SimpleDateFormat("yyyy/MM/dd");
 SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -218,7 +219,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	}
 	if (l!=null){
 		if (!l.equals(""))
-			cc+=" limite ? ";
+			cc+=" limit ? ";
 	}
 	/*
 	if (r!=null){
