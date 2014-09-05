@@ -60,10 +60,17 @@ color: black;
 <script>
 
 function PreCheck(a){
-	String limi = request.getParameter("limit"); 
-	if (confirm("預定載入數量為"+limi)) {
+	 var limi = document.getElementsByName("limit")[0].value; 
+	 
+	 if(limi==null || limi==""){
+		 limi="未限制!";
+	 } else{
+		 limi+="!";
+	 }
+	if (confirm("預定載入數量為:"+limi,"確定","取消")) {
 		ActionDeterminator(a)
-	}
+	} 
+
 }
 
 function ActionDeterminator(a) {
@@ -106,6 +113,11 @@ if (((String)session.getAttribute("mytype")).equals("99")){
     <td width="80%">
 <form id="form1" name="form1" method="post" action="">
     <table width="100%" border="0">
+  <tr>
+    <td width="30%">&nbsp;</td>
+    <td width="40%">&nbsp;</td>
+    <td width="30%">&nbsp;</td>
+  </tr>
 <%
 if (((String)session.getAttribute("mytype")).equals("99")){
 %>
@@ -165,13 +177,9 @@ if (((String)session.getAttribute("mytype")).equals("99")){
     <td>&nbsp;</td>
   </tr>
   <tr align="center">
-    <td colspan="2" align="center"><input name="button1" type="button" value="送出" onclick="PreCheck(1);"/><input name="button2" type="button" value="Excel" onclick="PreCheck(2);"/></td>
+  	<td>&nbsp;</td>
+    <td colspan="2" align="center"><input name="button1" type="button" value="送出" onclick="PreCheck(1);"/><input name="button2" type="button" value="Excel" onclick="PreCheck(2);"/><span>Excel將依據查詢條件進行轉出</span></td>
     <td>&nbsp;</td>
-  </tr>
-  <tr>
-  	<td>
-  		Excel將依據查詢條件進行轉出
-  	</td>
   </tr>
 </table>    
     </form></td>
@@ -203,6 +211,22 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
+    if(s!=null && !s.equals("")){
+    	 try {  
+             Integer.parseInt(s);  
+         } catch (NumberFormatException e) {  
+        	 out.print("狀態代碼必須為數字");
+             return ;  
+         }  
+    }
+	if(l!=null && !l.equals("")){
+		try {  
+            Integer.parseInt(l);  
+        } catch (NumberFormatException e) {  
+       	 out.print("載入數量必須為數字");
+            return ;  
+        }  
+    }
 	String sql="select s.userid,i.msgid,seq,schedule,phoneno,msgbody,tries,status,donetime,m.createtime,orgcode from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
 	String cc="";
 	if (u!=null)
@@ -217,10 +241,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		if (!s.equals(""))
 			cc+="and i.status=?  ";
 	}
-	if (l!=null){
-		if (!l.equals(""))
-			cc+=" limit ? ";
-	}
+	
 	/*
 	if (r!=null){
 		cc+="and i.rid=?  ";
@@ -234,6 +255,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		t=t.substring(0,8)+"235959";
 		out.println(t);
 	}
+	
 	PreparedStatement ps=null;
 	ResultSet rs = null;
 	Context ctx = new InitialContext();
@@ -252,7 +274,14 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			 "80","81","82","83","84","85","86","87","88","89",
 			 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"};
 	try {
-		ps = conn.prepareStatement(sql+cc+" order by s.userid,createtime desc,i.msgid");
+		
+		cc+=" order by s.userid,createtime desc,i.msgid";
+		
+		if (l!=null){
+			if (!l.equals(""))
+				cc+=" limit ? ";
+		}
+		ps = conn.prepareStatement(sql+cc);
 		int pcount=1;
 //out.print(sql+cc+" order by s.userid,createtime desc,i.msgid");
 		if (u!=null)
@@ -280,12 +309,12 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		}
 		
 	if (!s.equals("")){
-			ps.setString(pcount,s);
+			ps.setInt(pcount,Integer.parseInt(s));
 			pcount++;
 		}
 	
 	if (!l.equals("")){
-			ps.setString(pcount,l);
+			ps.setInt(pcount,Integer.parseInt(l));
 			pcount++;
 		}
 		rs = ps.executeQuery();
