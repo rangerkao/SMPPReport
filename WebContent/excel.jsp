@@ -14,6 +14,33 @@
 		response.sendRedirect("index.html");
 		return;
 	}
+	
+	//建立狀態對應Map
+		/* String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕","已送出",
+	            "10","11","12","13","14","15","16","17","18","19",
+				 "20","21","22","23","24","25","26","27","28","29",
+				 "30","31","32","33","34","35","36","37","38","39",
+				 "40","41","42","43","44","45","46","47","48","49",
+				 "50","51","52","53","54","55","56","57","58","59",
+				 "60","61","62","63","64","65","66","67","68","69",
+				 "70","71","72","73","74","75","76","77","78","79",
+				 "80","81","82","83","84","85","86","87","88","89",
+				 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"}; */
+		Map <Integer,String>map = new HashMap<Integer,String>();
+		map.put(1,"未發送");
+		map.put(2,"交換機已轉送");
+		map.put(3,"已送出");
+		map.put(4,"已到期");
+		map.put(5,"已刪除");
+		map.put(6,"無法送出");
+		map.put(7,"交換機已收到");
+		map.put(8,"未知");
+		map.put(9,"拒絕");
+		map.put(97,"查詢中");
+		map.put(98,"處理中");
+		map.put(99,"排程中");
+	
+	
 String u=null;
 if (((String)session.getAttribute("mytype")).equals("99")){
 	u=request.getParameter("userid");
@@ -25,6 +52,8 @@ String rMsg="";
 String m=request.getParameter("msgid");
 String f=request.getParameter("dfrom");
 String t=request.getParameter("dto");
+String s=request.getParameter("status");
+String l=request.getParameter("limit");
 SimpleDateFormat fromUser = new SimpleDateFormat("yyyyMMddHHmmss");
 SimpleDateFormat fromInput = new SimpleDateFormat("yyyy/MM/dd");
 SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -38,6 +67,22 @@ if (u!=null||m!=null||f!=null||t!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
+    if(s!=null && !s.equals("")){
+    	 try {  
+             Integer.parseInt(s);  
+         } catch (NumberFormatException e) {  
+        	 out.print("狀態代碼必須為數字");
+             return ;  
+         }  
+    }
+   	if(l!=null && !l.equals("")){
+   		try {  
+               Integer.parseInt(l);  
+           } catch (NumberFormatException e) {  
+          	 out.print("載入數量必須為數字");
+               return ;  
+           }  
+       }
 	String sql="select s.userid,i.msgid,seq,schedule,phoneno,msgbody,tries,status,donetime,m.createtime,orgcode from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
 	String cc="";
 	if (u!=null)
@@ -47,6 +92,10 @@ if (u!=null||m!=null||f!=null||t!=null){
 	if (m!=null){
 		if (!m.equals(""))
 			cc+="and i.msgid=?  ";
+	}
+	if (s!=null){
+		if (!s.equals(""))
+			cc+="and i.status=?  ";
 	}
 	/*
 	if (r!=null){
@@ -67,9 +116,15 @@ if (u!=null||m!=null||f!=null||t!=null){
 	Context env=(Context)ctx.lookup("java:comp/env");
 	DataSource ds =(DataSource)env.lookup("jdbc/SMPPDB");        
 	Connection conn = ds.getConnection();
-	String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕"};
+	//String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕"};
 	try {
-		ps = conn.prepareStatement(sql+cc+" order by s.userid,i.msgid,createtime");
+		cc+=" order by s.userid,createtime desc,i.msgid";
+		
+		if (l!=null){
+			if (!l.equals(""))
+				cc+=" limit ? ";
+		}
+		ps = conn.prepareStatement(sql+cc);
 		int pcount=1;
 //out.print(sql+cc+" order by s.userid,createtime desc,i.msgid");
 		if (u!=null)
@@ -93,6 +148,15 @@ if (u!=null||m!=null||f!=null||t!=null){
 			ps.setString(pcount,f);
 			pcount++;
 			ps.setString(pcount,t);
+			pcount++;
+		}
+	if (!s.equals("")){
+		ps.setInt(pcount,Integer.parseInt(s));
+		pcount++;
+	}
+	
+	if (!l.equals("")){
+			ps.setInt(pcount,Integer.parseInt(l));
 			pcount++;
 		}
 		rs = ps.executeQuery();
@@ -147,7 +211,7 @@ if (u!=null||m!=null||f!=null||t!=null){
       <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=myFormat.format(fromUser.parse(rs.getString("donetime")))%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="111" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("phoneno")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=statusmsg[rs.getInt("status")]%><u></u><u></u></span></p></td>
+      <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=map.get(rs.getInt("status"))%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>
     </tr>
 <%
