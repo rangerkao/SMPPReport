@@ -58,6 +58,14 @@ color: black;
 
 </style>
 <script>
+
+function PreCheck(a){
+	String limi = request.getParameter("limite"); 
+	if (confirm("預定載入數量為"+limi)) {
+		ActionDeterminator(a)
+	}
+}
+
 function ActionDeterminator(a) {
   if (a == 2) {
     document.getElementById('form1').action = 'excel.jsp';
@@ -110,6 +118,16 @@ if (((String)session.getAttribute("mytype")).equals("99")){
 }
 %>
   <tr>
+    <td align="right"><label>狀態</label></td>
+    <td><input name="status" type="text" maxlength="20" /></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="right"><label>載入數量</label></td>
+    <td><input name="limite" type="text" maxlength="20" /></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
     <td align="right"><label>Message ID</label></td>
     <td><input name="msgid" type="text" maxlength="40" /></td>
     <td>&nbsp;</td>
@@ -147,7 +165,7 @@ if (((String)session.getAttribute("mytype")).equals("99")){
     <td>&nbsp;</td>
   </tr>
   <tr align="center">
-    <td colspan="2" align="center"><input name="button1" type="button" value="送出" onclick="ActionDeterminator(1);"/><input name="button2" type="button" value="Excel" onclick="ActionDeterminator(2);"/></td>
+    <td colspan="2" align="center"><input name="button1" type="button" value="送出" onclick="PreCheck(1);"/><input name="button2" type="button" value="Excel" onclick="PreCheck(2);"/></td>
     <td>&nbsp;</td>
   </tr>
   <tr>
@@ -170,6 +188,7 @@ String rMsg="";
 String m=request.getParameter("msgid");
 String f=request.getParameter("dfrom");
 String t=request.getParameter("dto");
+String s=request.getParameter("status");
 SimpleDateFormat fromUser = new SimpleDateFormat("yyyyMMddHHmmss");
 SimpleDateFormat fromInput = new SimpleDateFormat("yyyy/MM/dd");
 SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -192,6 +211,14 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	if (m!=null){
 		if (!m.equals(""))
 			cc+="and i.msgid=?  ";
+	}
+	if (s!=null){
+		if (!s.equals(""))
+			cc+="and i.status=?  ";
+	}
+	if (l!=null){
+		if (!l.equals(""))
+			cc+=" limite ? ";
 	}
 	/*
 	if (r!=null){
@@ -238,6 +265,16 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			ps.setString(pcount,f);
 			pcount++;
 			ps.setString(pcount,t);
+			pcount++;
+		}
+		
+	if (!s.equals("")){
+			ps.setString(pcount,s);
+			pcount++;
+		}
+	
+	if (!l.equals("")){
+			ps.setString(pcount,l);
 			pcount++;
 		}
 		rs = ps.executeQuery();
