@@ -161,8 +161,9 @@ if (((String)session.getAttribute("mytype")).equals("99")){
     <td align="right"><label>狀態</label></td>
     <td><!-- <input name="status" type="text" maxlength="20" /> -->
    		<select name="status">
+   		<option value="">全部</option>
    		<%
-
+		
    		for(Integer item : map.keySet()){
    			out.print("<option value="+item+">"+map.get(item)+"</option>");
    		}
@@ -275,10 +276,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		if (!m.equals(""))
 			cc+="and i.msgid=?  ";
 	}
-	if (s!=null){
-		if (!s.equals(""))
-			cc+="and i.status=?  ";
-	}
+	
 	
 	/*
 	if (r!=null){
@@ -292,6 +290,11 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		t=fromUser.format(fromInput.parse(t));
 		t=t.substring(0,8)+"235959";
 		out.println(t);
+	}
+	
+	if (s!=null){
+		if (!s.equals(""))
+			cc+="and i.status=?  ";
 	}
 	
 	PreparedStatement ps=null;
