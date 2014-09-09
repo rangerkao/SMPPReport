@@ -349,8 +349,14 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			pcount++;
 		}
 		rs = ps.executeQuery();
+		
+		int total=conn.createStatement().executeQuery("select count(*) from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid "+cc).getInt(0);
 %>
 <table border="1" cellpadding="0" cellspacing="0" width="1383">
+      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
+      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
+	  <td rowspand="7" bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
+	</tr>
     <tr height="27">
       <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
       <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
