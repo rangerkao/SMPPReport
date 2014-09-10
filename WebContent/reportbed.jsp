@@ -267,6 +267,8 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
         }  
     }
 	String sql="select s.userid,i.msgid,seq,schedule,phoneno,msgbody,tries,status,donetime,m.createtime,orgcode from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
+	String sql2="select count(*) c from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
+	
 	String cc="";
 	if (u!=null)
 	if (!u.equals("")){
@@ -289,7 +291,6 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		f=fromUser.format(fromInput.parse(f));
 		t=fromUser.format(fromInput.parse(t));
 		t=t.substring(0,8)+"235959";
-		out.println(t);
 	}
 	
 	if (s!=null){
@@ -297,7 +298,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			cc+="and i.status=?  ";
 	}
 	
-	PreparedStatement ps=null;
+	PreparedStatement ps=null,ps2=null;
 	ResultSet rs = null;
 	Context ctx = new InitialContext();
 	Context env=(Context)ctx.lookup("java:comp/env");
@@ -306,6 +307,8 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	//String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕"};	
 	try {
 		
+		ps2 = conn.prepareStatement(sql2+cc);
+		
 		cc+=" order by s.userid,createtime desc,i.msgid";
 		
 		if (l!=null){
@@ -313,16 +316,20 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 				cc+=" limit ? ";
 		}
 		ps = conn.prepareStatement(sql+cc);
+		
+		
 		int pcount=1;
 //out.print(sql+cc+" order by s.userid,createtime desc,i.msgid");
 		if (u!=null)
     if (!u.equals("")){
 			ps.setString(pcount,u);
+			ps2.setString(pcount,u);
 			pcount++;
 		}
 		if (m!=null)
     if (!m.equals("")){
 			ps.setString(pcount,m);
+			ps2.setString(pcount,m);
 			pcount++;
 		}
 		/*
@@ -334,28 +341,41 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		if (f!=null&&t!=null)
     if (!f.equals("")&&!t.equals("")){
 			ps.setString(pcount,f);
+			ps2.setString(pcount,f);
 			pcount++;
 			ps.setString(pcount,t);
+			ps2.setString(pcount,t);
 			pcount++;
 		}
 		
 	if (!s.equals("")){
 			ps.setInt(pcount,Integer.parseInt(s));
+			ps2.setInt(pcount,Integer.parseInt(s));
 			pcount++;
 		}
+	
 	
 	if (!l.equals("")){
 			ps.setInt(pcount,Integer.parseInt(l));
 			pcount++;
 		}
+
 		rs = ps.executeQuery();
+		ps2.executeQuery();
+		int total=0;
 		
-		int total=conn.createStatement().executeQuery("select count(*) from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid "+cc).getInt(0);
+		ResultSet rs2=ps2.executeQuery();
+		
+		if(rs2.next())
+			total=rs2.getInt("c");
+		//int total=ps2.executeQuery().getInt(0);
+		
+		
 %>
 <table border="1" cellpadding="0" cellspacing="0" width="1383">
       <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
       <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
-	  <td rowspand="7" bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
+	  <td colspan="7"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
 	</tr>
     <tr height="27">
       <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
@@ -444,6 +464,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		try{
 			rs.close();
 			ps.close();
+			ps2.close();
 			conn.close();
 		}catch(Exception e){
 		}
