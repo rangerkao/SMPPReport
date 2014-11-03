@@ -36,6 +36,8 @@
 		map.put(7,"交換機已收到");
 		map.put(8,"未知");
 		map.put(9,"拒絕");
+		map.put(95,"傳送失敗");
+		map.put(96,"逾期");
 		map.put(97,"查詢中");
 		map.put(98,"處理中");
 		map.put(99,"排程中");
