@@ -252,7 +252,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
-    if(s!=null && !s.equals("")){
+    if(s!=null && !"".equals(s)){
     	 try {  
              Integer.parseInt(s);  
          } catch (NumberFormatException e) {  
@@ -260,7 +260,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
              return ;  
          }  
     }
-	if(l!=null && !l.equals("")){
+	if(l!=null && !"".equals(l)){
 		try {  
             Integer.parseInt(l);  
         } catch (NumberFormatException e) {  
@@ -272,13 +272,11 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	String sql2="select count(*) c from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
 	
 	String cc="";
-	if (u!=null)
-	if (!u.equals("")){
+	if (u!=null && !"".equals(u)){
 		cc+="and s.userid=?  ";
 	}
-	if (m!=null){
-		if (!m.equals(""))
-			cc+="and i.msgid=?  ";
+	if (m!=null && !"".equals(m)){
+		cc+="and i.msgid=?  ";
 	}
 	
 	
@@ -287,16 +285,14 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		cc+="and i.rid=?  ";
 	}
 	*/
-	if (f!=null&&t!=null)
-  if (!f.equals("")&&!t.equals("")){
+  	if (f!=null && !"".equals(f)&&t!=null && !"".equals(t)){
 		cc+="and m.createtime >=? and m.createtime<=? ";
 		f=fromUser.format(fromInput.parse(f));
 		t=fromUser.format(fromInput.parse(t));
 		t=t.substring(0,8)+"235959";
 	}
 	
-	if (s!=null){
-		if (!s.equals(""))
+	if (s!=null && !"".equals(s)){
 			cc+="and i.status=?  ";
 	}
 	
@@ -313,7 +309,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		
 		cc+=" order by s.userid,createtime desc,i.msgid";
 		
-		if (l!=null){
+		if (l!=null && !"".equals(l)){
 			if (!l.equals(""))
 				cc+=" limit ? ";
 		}
@@ -322,14 +318,13 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		
 		int pcount=1;
 //out.print(sql+cc+" order by s.userid,createtime desc,i.msgid");
-		if (u!=null)
-    if (!u.equals("")){
+    if (u!=null && !"".equals(u)){
 			ps.setString(pcount,u);
 			ps2.setString(pcount,u);
 			pcount++;
 		}
-		if (m!=null)
-    if (!m.equals("")){
+
+    if (m!=null && !"".equals(m)){
 			ps.setString(pcount,m);
 			ps2.setString(pcount,m);
 			pcount++;
@@ -340,8 +335,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			pcount++;
 		}
 		*/
-		if (f!=null&&t!=null)
-    if (!f.equals("")&&!t.equals("")){
+    if (f!=null && !"".equals(f) && t!=null && !"".equals(t)){
 			ps.setString(pcount,f);
 			ps2.setString(pcount,f);
 			pcount++;
@@ -350,14 +344,14 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			pcount++;
 		}
 		
-	if (!s.equals("")){
+	if (s!=null && !"".equals(s)){
 			ps.setInt(pcount,Integer.parseInt(s));
 			ps2.setInt(pcount,Integer.parseInt(s));
 			pcount++;
 		}
 	
 	
-	if (!l.equals("")){
+	if (l!=null && !"".equals(l)){
 			ps.setInt(pcount,Integer.parseInt(l));
 			pcount++;
 		}
