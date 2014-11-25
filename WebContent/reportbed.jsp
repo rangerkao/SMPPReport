@@ -159,6 +159,9 @@ if (((String)session.getAttribute("mytype")).equals("99")){
 <%
 }
 %>
+  <tr style="display: none;">
+  	<td><input type="text" value="yes" name="pLog"/></td>
+  </tr>
   <tr>
     <td align="right"><label>狀態</label></td>
     <td><!-- <input name="status" type="text" maxlength="20" /> -->
@@ -234,6 +237,7 @@ if (((String)session.getAttribute("mytype")).equals("99")){
 </table>
 <%
 String rMsg="";
+String pLog=request.getParameter("pLog");
 String m=request.getParameter("msgid");
 String f=request.getParameter("dfrom");
 String t=request.getParameter("dto");
@@ -356,7 +360,8 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			pcount++;
 		}
 
-		rs = ps.executeQuery();
+		
+		
 		ps2.executeQuery();
 		int total=0;
 		
@@ -366,6 +371,9 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			total=rs2.getInt("c");
 		//int total=ps2.executeQuery().getInt(0);
 		
+		//以pLog為記錄是否為首次登入網頁，20141125 add 首次進入時不預載資料
+		if(pLog!=null && pLog!="")
+			rs = ps.executeQuery();
 		
 %>
 <table border="1" cellpadding="0" cellspacing="0" width="1383">
@@ -389,6 +397,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		int fcount=0;
 		int scount=0;
 		int tcount=0;
+		if(rs!=null){
 		while (rs.next()){
 			if (rs.getString("msgid").equals(rsMsgid)){
 				if (!rsMsgid.equals("")){
@@ -426,6 +435,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
       <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>
     </tr>
 <%
+		}
 		}
 		if (!rsMsgid.equals("")){
 %>
