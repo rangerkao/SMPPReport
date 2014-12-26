@@ -204,14 +204,24 @@ if (u!=null||m!=null||f!=null||t!=null){
 			fcount++;
 			scount++;
 			tcount++;
+			
+			
+			String donetime="";
+			if(rs.getString("donetime")!=null&&!"".equals(rs.getString("donetime"))){
+				donetime=myFormat.format(fromUser.parse(rs.getString("donetime")));
+			}
+			String createtime="";
+			if(rs.getString("createtime")!=null&&!"".equals(rs.getString("createtime"))){
+				donetime=myFormat.format(fromUser.parse(rs.getString("createtime")));
+			}
 %>
     <tr height="27">
       <td nowrap="nowrap" width="331" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgid")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="117" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("orgcode")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("seq")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=myFormat.format(fromUser.parse(rs.getString("createtime")))%><u></u><u></u></span></p></td>
+      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=createtime%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=myFormat.format(fromUser.parse(rs.getString("donetime")))%><u></u><u></u></span></p></td>
+      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=donetime%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="111" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("phoneno")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=map.get(rs.getInt("status"))%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>

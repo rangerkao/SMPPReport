@@ -191,8 +191,8 @@ if (((String)session.getAttribute("mytype")).equals("99")){
   <tr>
     <td align="right"><label>建立日期</label></td>
     <td>
-		    <input type="text" id="dfrom" name="dfrom" size="10" readonly>
-    <input type="button" value="..." id="BTN" name="BTN">
+		    <input type="text" id="dfrom" name="dfrom" size="10" readonly />
+    <input type="button" value="..." id="BTN" name="BTN" />
     <script type="text/javascript">
         new Calendar({
             inputField: "dfrom",
@@ -204,8 +204,9 @@ if (((String)session.getAttribute("mytype")).equals("99")){
             onSelect: function() {this.hide();}
         });
     </script>
-		    <input type="text" id="dto" name="dto" size="10" readonly>
-    <input type="button" value="..." id="BTN1" name="BTN1">
+    
+		    <input type="text" id="dto" name="dto" size="10" readonly/>
+    <input type="button" value="..." id="BTN1" name="BTN1"/>
     <script type="text/javascript">
         new Calendar({
             inputField: "dto",
@@ -360,8 +361,6 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			pcount++;
 		}
 
-		
-		
 		ps2.executeQuery();
 		int total=0;
 		
@@ -377,6 +376,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		
 %>
 <table border="1" cellpadding="0" cellspacing="0" width="1383">
+	<tr>
       <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
       <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
 	  <td colspan="7"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
@@ -422,14 +422,25 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			fcount++;
 			scount++;
 			tcount++;
+			
+			
+			String donetime="";
+			 if(rs.getString("donetime")!=null&&!"".equals(rs.getString("donetime"))){
+				donetime=myFormat.format(fromUser.parse(rs.getString("donetime")));
+			} 
+			String createtime="";
+			if(rs.getString("createtime")!=null&&!"".equals(rs.getString("createtime"))){
+				createtime=myFormat.format(fromUser.parse(rs.getString("createtime")));
+			}
+			
 %>
     <tr height="27">
       <td nowrap="nowrap" width="331" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgid")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="117" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("orgcode")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("seq")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=myFormat.format(fromUser.parse(rs.getString("createtime")))%><u></u><u></u></span></p></td>
+      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=createtime%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=myFormat.format(fromUser.parse(rs.getString("donetime")))%><u></u><u></u></span></p></td>
+      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=donetime%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="111" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("phoneno")%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=map.get(rs.getInt("status"))%><u></u><u></u></span></p></td>
       <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>
