@@ -69,7 +69,7 @@ if (u!=null||m!=null||f!=null||t!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
-    if(s!=null && !s.equals("")){
+    if(s!=null && !"".equals(s)){
     	 try {  
              Integer.parseInt(s);  
          } catch (NumberFormatException e) {  
@@ -77,7 +77,7 @@ if (u!=null||m!=null||f!=null||t!=null){
              return ;  
          }  
     }
-   	if(l!=null && !l.equals("")){
+   	if(l!=null && !"".equals(l)){
    		try {  
                Integer.parseInt(l);  
            } catch (NumberFormatException e) {  
@@ -210,9 +210,9 @@ if (u!=null||m!=null||f!=null||t!=null){
 			if(rs.getString("donetime")!=null&&!"".equals(rs.getString("donetime"))){
 				donetime=myFormat.format(fromUser.parse(rs.getString("donetime")));
 			}
-			String createtime="";
+			String createtime="123";
 			if(rs.getString("createtime")!=null&&!"".equals(rs.getString("createtime"))){
-				donetime=myFormat.format(fromUser.parse(rs.getString("createtime")));
+				createtime=myFormat.format(fromUser.parse(rs.getString("createtime")));
 			}
 %>
     <tr height="27">
