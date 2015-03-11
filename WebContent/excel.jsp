@@ -26,21 +26,22 @@
 				 "70","71","72","73","74","75","76","77","78","79",
 				 "80","81","82","83","84","85","86","87","88","89",
 				 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"}; */
-		Map <Integer,String>map = new HashMap<Integer,String>();
-		map.put(1,"未發送");
-		map.put(2,"交換機已轉送");
-		map.put(3,"已送出");
-		map.put(4,"已到期");
-		map.put(5,"已刪除");
-		map.put(6,"無法送出");
-		map.put(7,"交換機已收到");
-		map.put(8,"未知");
-		map.put(9,"拒絕");
-		map.put(95,"傳送失敗");
-		map.put(96,"逾期");
-		map.put(97,"查詢中");
-		map.put(98,"處理中");
-		map.put(99,"排程中");
+	Map <Integer,String>map = new HashMap<Integer,String>();
+	map.put(0,"未發送");
+	map.put(1,"交換機已轉送");
+	map.put(2,"已送出");
+	map.put(3,"已到期");
+	map.put(4,"已刪除");
+	map.put(5,"無法送出");
+	map.put(6,"交換機已收到");
+	map.put(7,"未知");
+	map.put(8,"拒絕");
+	map.put(9,"已送出");
+	map.put(95,"傳送失敗");
+	map.put(96,"逾期");
+	map.put(97,"查詢中");
+	map.put(98,"處理中");
+	map.put(99,"排程中");
 	
 	
 String u=null;
