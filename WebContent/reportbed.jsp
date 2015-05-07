@@ -100,7 +100,7 @@ function ActionDeterminator(a) {
 			 "80","81","82","83","84","85","86","87","88","89",
 			 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"}; */
 	Map <Integer,String>map = new HashMap<Integer,String>();
-	map.put(0,"未發送");
+	/* map.put(0,"未發送");
 	map.put(1,"交換機已轉送");
 	map.put(2,"已送出");
 	map.put(3,"已到期");
@@ -114,7 +114,24 @@ function ActionDeterminator(a) {
 	map.put(96,"逾期");
 	map.put(97,"查詢中");
 	map.put(98,"處理中");
-	map.put(99,"排程中");
+	map.put(99,"排程中"); */
+	
+	//20150324 change
+	map.put(0,"傳送中");
+	map.put(1,"傳送中");
+	map.put(2,"成功");
+	map.put(3,"失敗");
+	map.put(4,"失敗");
+	map.put(5,"失敗");
+	map.put(6,"傳送中");
+	map.put(7,"失敗");
+	map.put(8,"失敗");
+	map.put(9,"成功");
+	map.put(95,"傳送中");
+	map.put(96,"失敗");
+	map.put(97,"傳送中");
+	map.put(98,"傳送中");
+	map.put(99,"傳送中");
 
 %>
 <%
