@@ -87,14 +87,14 @@ if (u!=null||m!=null||f!=null||t!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
-    if(s!=null && !"".equals(s)){
+   /*  if(s!=null && !"".equals(s)){
     	 try {  
              Integer.parseInt(s);  
          } catch (NumberFormatException e) {  
         	 out.print("狀態代碼必須為數字");
              return ;  
          }  
-    }
+    } */
    	if(l!=null && !"".equals(l)){
    		try {  
                Integer.parseInt(l);  
@@ -113,9 +113,10 @@ if (u!=null||m!=null||f!=null||t!=null){
 		if (!m.equals(""))
 			cc+="and i.msgid=?  ";
 	}
-	if (s!=null){
+	if (s!=null ){
 		if (!s.equals(""))
-			cc+="and i.status=?  ";
+			cc+="and i.status in "+s+" ";
+			/* cc+="and i.status=?  "; */
 	}
 	/*
 	if (r!=null){
@@ -170,10 +171,10 @@ if (u!=null||m!=null||f!=null||t!=null){
 			ps.setString(pcount,t);
 			pcount++;
 		}
-	if (!s.equals("")){
+/* 	if (!s.equals("")){
 		ps.setInt(pcount,Integer.parseInt(s));
 		pcount++;
-	}
+	} */
 	
 	if (!l.equals("")){
 			ps.setInt(pcount,Integer.parseInt(l));

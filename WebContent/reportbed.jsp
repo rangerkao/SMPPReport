@@ -132,7 +132,6 @@ function ActionDeterminator(a) {
 	map.put(97,"傳送中");
 	map.put(98,"傳送中");
 	map.put(99,"傳送中");
-
 %>
 <%
 	if (session.getAttribute("mytype")==null){
@@ -185,12 +184,16 @@ if (((String)session.getAttribute("mytype")).equals("99")){
     <td><!-- <input name="status" type="text" maxlength="20" /> -->
    		<select name="status">
    		<option value="">全部</option>
-   		<%
+   		<%--20150713 add --%>
+   		<option value="(0,1,6,95,97,98,99)">轉送中</option>
+   		<option value="(2)">成功</option>
+   		<option value="(3,4,5,7,8,96)">失敗</option>
+   		<%-- <%
 		
    		for(Integer item : map.keySet()){
    			out.print("<option value="+item+">"+map.get(item)+"</option>");
    		}
-   		%>
+   		%> --%>
 		    <%-- <option value="1">1</option>--%>
 		</select>
     </td>
@@ -275,14 +278,15 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
-    if(s!=null && !"".equals(s)){
+        //20150713 mod
+    /* if(s!=null && !"".equals(s)){
     	 try {  
              Integer.parseInt(s);  
          } catch (NumberFormatException e) {  
         	 out.print("狀態代碼必須為數字");
              return ;  
          }  
-    }
+    } */
 	if(l!=null && !"".equals(l)){
 		try {  
             Integer.parseInt(l);  
@@ -316,7 +320,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	}
 	
 	if (s!=null && !"".equals(s)){
-			cc+="and i.status=?  ";
+			cc+="and i.status in "+s+" ";
 	}
 	
 	PreparedStatement ps=null,ps2=null;
@@ -367,11 +371,11 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			pcount++;
 		}
 		
-	if (s!=null && !"".equals(s)){
+/* 	 if (s!=null && !"".equals(s)){
 			ps.setInt(pcount,Integer.parseInt(s));
-			ps2.setInt(pcount,Integer.parseInt(s));
+			ps2.setInt(pcount,Integer.parseInt(s)); 
 			pcount++;
-		}
+		}  */
 	
 	
 	if (l!=null && !"".equals(l)){
