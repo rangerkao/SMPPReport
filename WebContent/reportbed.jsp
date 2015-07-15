@@ -117,6 +117,7 @@ function ActionDeterminator(a) {
 	map.put(99,"排程中"); */
 	
 	//20150324 change
+	//20150715 add status 94 fail by got negetiveresponse
 	map.put(0,"傳送中");
 	map.put(1,"傳送中");
 	map.put(2,"成功");
@@ -127,6 +128,7 @@ function ActionDeterminator(a) {
 	map.put(7,"失敗");
 	map.put(8,"失敗");
 	map.put(9,"成功");
+	map.put(94,"失敗");
 	map.put(95,"傳送中");
 	map.put(96,"失敗");
 	map.put(97,"傳送中");
@@ -187,7 +189,7 @@ if (((String)session.getAttribute("mytype")).equals("99")){
    		<%--20150713 add --%>
    		<option value="(0,1,6,95,97,98,99)">轉送中</option>
    		<option value="(2)">成功</option>
-   		<option value="(3,4,5,7,8,96)">失敗</option>
+   		<option value="(3,4,5,7,8,94,96)">失敗</option>
    		<%-- <%
 		
    		for(Integer item : map.keySet()){

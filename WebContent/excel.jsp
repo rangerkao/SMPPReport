@@ -44,6 +44,7 @@
 		map.put(99,"排程中"); */
 		
 		//20150324 change
+		//20150715 add status 94 fail by got negetiveresponse
 		map.put(0,"傳送中");
 		map.put(1,"傳送中");
 		map.put(2,"成功");
@@ -54,6 +55,7 @@
 		map.put(7,"失敗");
 		map.put(8,"失敗");
 		map.put(9,"成功");
+		map.put(94,"失敗");
 		map.put(95,"傳送中");
 		map.put(96,"失敗");
 		map.put(97,"傳送中");
