@@ -55,7 +55,7 @@
 		map.put(7,"失敗");
 		map.put(8,"失敗");
 		map.put(9,"成功");
-		map.put(94,"失敗");
+		map.put(94,"亞太用戶");
 		map.put(95,"傳送中");
 		map.put(96,"失敗");
 		map.put(97,"傳送中");

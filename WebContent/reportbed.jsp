@@ -76,29 +76,36 @@ function PreCheck(a){
 
 function ActionDeterminator(a) {
   if (a == 2) {
-    document.getElementById('form1').action = 'excel.jsp';
+    //document.getElementById('form1').action = 'excel.jsp';
+	  document.getElementById('form1').action = 'reportbed.jsp?exportToExcel=YES';
   }
   if(a == 1) {
     document.getElementById('form1').action = 'reportbed.jsp';
   }
 	document.getElementById('form1').submit();
 }
+
 </script>
 </head>
 
+
 <body>
 <%
-//建立狀態對應Map
-	/* String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕","已送出",
-            "10","11","12","13","14","15","16","17","18","19",
-			 "20","21","22","23","24","25","26","27","28","29",
-			 "30","31","32","33","34","35","36","37","38","39",
-			 "40","41","42","43","44","45","46","47","48","49",
-			 "50","51","52","53","54","55","56","57","58","59",
-			 "60","61","62","63","64","65","66","67","68","69",
-			 "70","71","72","73","74","75","76","77","78","79",
-			 "80","81","82","83","84","85","86","87","88","89",
-			 "90","91","92","93","94","95","96","查詢中(97)","處理中(98)","排程中(99)"}; */
+	//auther check
+	if (session.getAttribute("mytype")==null){
+		response.sendRedirect("index.html");
+		return;
+	}
+	
+	//user check
+	String u=null;
+	if (((String)session.getAttribute("mytype")).equals("99")){
+		u=request.getParameter("userid");
+	}else{
+		u=(String)session.getAttribute("memberid");
+	}
+	
+	//map setting
 	Map <Integer,String>map = new HashMap<Integer,String>();
 	/* map.put(0,"未發送");
 	map.put(1,"交換機已轉送");
@@ -128,149 +135,155 @@ function ActionDeterminator(a) {
 	map.put(7,"失敗");
 	map.put(8,"失敗");
 	map.put(9,"成功");
-	map.put(94,"失敗");
+	map.put(94,"亞太用戶");
 	map.put(95,"傳送中");
 	map.put(96,"失敗");
 	map.put(97,"傳送中");
 	map.put(98,"傳送中");
 	map.put(99,"傳送中");
-%>
-<%
-	if (session.getAttribute("mytype")==null){
-		response.sendRedirect("index.html");
-		return;
-	}
-String u=null;
-if (((String)session.getAttribute("mytype")).equals("99")){
-	u=request.getParameter("userid");
-}else{
-	u=(String)session.getAttribute("memberid");
-}
-%>
-<ul class="basictab">
-<li><a href="adminbed.jsp">客戶管理</a></li>
-<li class="selected"><a href="reportbed.jsp">報表查詢</a></li>
-</ul>
-<table width="100%" border="0" align="center">
-  <tr>
-    <td width="10%">&nbsp;</td>
-    <td width="80%" align="center">報表</td>
-    <td width="10%">&nbsp;</td>
-  </tr>
-  <tr>
-    <td width="10%">&nbsp;</td>
-    <td width="80%">
-<form id="form1" name="form1" method="post" action="">
-    <table width="100%" border="0">
-  <tr>
-    <td width="30%">&nbsp;</td>
-    <td width="40%">&nbsp;</td>
-    <td width="30%">&nbsp;</td>
-  </tr>
-<%
-if (((String)session.getAttribute("mytype")).equals("99")){
-%>
-  <tr>
-    <td align="right"><label>客戶代碼</label></td>
-    <td><input name="userid" type="text" maxlength="20" /></td>
-    <td>&nbsp;</td>
-  </tr>
-<%
-}
-%>
-  <tr style="display: none;">
-  	<td><input type="text" value="yes" name="pLog"/></td>
-  </tr>
-  <tr>
-    <td align="right"><label>狀態</label></td>
-    <td><!-- <input name="status" type="text" maxlength="20" /> -->
-   		<select name="status">
-   		<option value="">全部</option>
-   		<%--20150713 add --%>
-   		<option value="(0,1,6,95,97,98,99)">轉送中</option>
-   		<option value="(2)">成功</option>
-   		<option value="(3,4,5,7,8,94,96)">失敗</option>
-   		<%-- <%
+	
+	String rMsg="";
+	String pLog=request.getParameter("pLog");
+	String m=request.getParameter("msgid");
+	String f=request.getParameter("dfrom");
+	String t=request.getParameter("dto");
+	String s=request.getParameter("status");
+	String l=request.getParameter("limit");
+	SimpleDateFormat fromUser = new SimpleDateFormat("yyyyMMddHHmmss");
+	SimpleDateFormat fromInput = new SimpleDateFormat("yyyy/MM/dd");
+	SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	
+	String exportToExcel = request.getParameter("exportToExcel");
+	if(exportToExcel != null && exportToExcel.toString().equalsIgnoreCase("YES")){
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "inline; filename="+ "excel.xls");
 		
-   		for(Integer item : map.keySet()){
-   			out.print("<option value="+item+">"+map.get(item)+"</option>");
-   		}
-   		%> --%>
-		    <%-- <option value="1">1</option>--%>
-		</select>
-    </td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td align="right"><label>載入數量</label></td>
-    <td><input name="limit" type="text" maxlength="20" /></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td align="right"><label>Message ID</label></td>
-    <td><input name="msgid" type="text" maxlength="40" /></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td align="right"><label>建立日期</label></td>
-    <td>
-		    <input type="text" id="dfrom" name="dfrom" size="10" readonly />
-    <input type="button" value="..." id="BTN" name="BTN" />
-    <script type="text/javascript">
-        new Calendar({
-            inputField: "dfrom",
-            dateFormat: "%Y/%m/%d",
-            trigger: "BTN",
-            bottomBar: true,
-            weekNumbers: true,
-            showTime: 24,
-            onSelect: function() {this.hide();}
-        });
-    </script>
-    
-		    <input type="text" id="dto" name="dto" size="10" readonly/>
-    <input type="button" value="..." id="BTN1" name="BTN1"/>
-    <script type="text/javascript">
-        new Calendar({
-            inputField: "dto",
-            dateFormat: "%Y/%m/%d",
-            trigger: "BTN1",
-            bottomBar: true,
-            weekNumbers: true,
-            showTime: 24,
-            onSelect: function() {this.hide();}
-        });
-    </script>
-		</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr align="center">
-  	<td>&nbsp;</td>
-    <td colspan="2" align="center"><input name="button1" type="button" value="送出" onclick="PreCheck(1);"/><input name="button2" type="button" value="Excel" onclick="PreCheck(2);"/><span>Excel將依據查詢條件進行轉出</span></td>
-    <td>&nbsp;</td>
-  </tr>
-</table>    
-    </form></td>
-    <td width="10%">&nbsp;</td>
-  </tr>
-  <tr >
-    <td width="10%">&nbsp;</td>
-    <td width="80%">&nbsp;</td>
-    <td width="10%">&nbsp;</td>
-  </tr>
-</table>
+		
+
+	}else{
+
+%>
+		<ul class="basictab">
+		<li><a href="adminbed.jsp">客戶管理</a></li>
+		<li class="selected"><a href="reportbed.jsp">報表查詢</a></li>
+		</ul>
+		<table width="100%" border="0" align="center">
+		  <tr>
+		    <td width="10%">&nbsp;</td>
+		    <td width="80%" align="center">報表</td>
+		    <td width="10%">&nbsp;</td>
+		  </tr>
+		  <tr>
+		    <td width="10%">&nbsp;</td>
+		    <td width="80%">
+		<form id="form1" name="form1" method="post" action="">
+		    <table width="100%" border="0">
+		  <tr>
+		    <td width="30%">&nbsp;</td>
+		    <td width="40%">&nbsp;</td>
+		    <td width="30%">&nbsp;</td>
+		  </tr>
 <%
-String rMsg="";
-String pLog=request.getParameter("pLog");
-String m=request.getParameter("msgid");
-String f=request.getParameter("dfrom");
-String t=request.getParameter("dto");
-String s=request.getParameter("status");
-String l=request.getParameter("limit");
-SimpleDateFormat fromUser = new SimpleDateFormat("yyyyMMddHHmmss");
-SimpleDateFormat fromInput = new SimpleDateFormat("yyyy/MM/dd");
-SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		if (((String)session.getAttribute("mytype")).equals("99")){
+%>
+			  <tr>
+			    <td align="right"><label>客戶代碼</label></td>
+			    <td><input name="userid" type="text" maxlength="20" /></td>
+			    <td>&nbsp;</td>
+			  </tr>
+<%
+		}
+%>
+		  <tr style="display: none;">
+		  	<td><input type="text" value="yes" name="pLog"/></td>
+		  </tr>
+		  <tr>
+		    <td align="right"><label>狀態</label></td>
+		    <td><!-- <input name="status" type="text" maxlength="20" /> -->
+		   		<select name="status">
+		   		<option value="">全部</option>
+		   		<%--20150713 add --%>
+		   		<option value="(0,1,6,95,97,98,99)">轉送中</option>
+		   		<option value="(2)">成功</option>
+		   		<option value="(3,4,5,7,8,96)">失敗</option>
+		   		<option value="(94)">亞太用戶</option>
+		   		<%-- <%
+				
+		   		for(Integer item : map.keySet()){
+		   			out.print("<option value="+item+">"+map.get(item)+"</option>");
+		   		}
+		   		%> --%>
+				    <%-- <option value="1">1</option>--%>
+				</select>
+		    </td>
+		    <td>&nbsp;</td>
+		  </tr>
+		  <tr>
+		    <td align="right"><label>載入數量</label></td>
+		    <td><input name="limit" type="text" maxlength="20" /></td>
+		    <td>&nbsp;</td>
+		  </tr>
+		  <tr>
+		    <td align="right"><label>Message ID</label></td>
+		    <td><input name="msgid" type="text" maxlength="40" /></td>
+		    <td>&nbsp;</td>
+		  </tr>
+		  <tr>
+		    <td align="right"><label>建立日期</label></td>
+		    <td>
+				    <input type="text" id="dfrom" name="dfrom" size="10" readonly />
+		    <input type="button" value="..." id="BTN" name="BTN" />
+		    <script type="text/javascript">
+		        new Calendar({
+		            inputField: "dfrom",
+		            dateFormat: "%Y/%m/%d",
+		            trigger: "BTN",
+		            bottomBar: true,
+		            weekNumbers: true,
+		            showTime: 24,
+		            onSelect: function() {this.hide();}
+		        });
+		    </script>
+		    
+				    <input type="text" id="dto" name="dto" size="10" readonly/>
+		    <input type="button" value="..." id="BTN1" name="BTN1"/>
+		    <script type="text/javascript">
+		        new Calendar({
+		            inputField: "dto",
+		            dateFormat: "%Y/%m/%d",
+		            trigger: "BTN1",
+		            bottomBar: true,
+		            weekNumbers: true,
+		            showTime: 24,
+		            onSelect: function() {this.hide();}
+		        });
+		    </script>
+				</td>
+		    <td>&nbsp;</td>
+		  </tr>
+		  <tr align="center">
+		  	<td>&nbsp;</td>
+		    <td colspan="2" align="center">
+		    	<input name="button1" type="button" value="送出" onclick="PreCheck(1);"/>
+	    		<input name="button2" type="button" value="Excel" onclick="PreCheck(2);"/><span>Excel將依據查詢條件進行轉出</span>
+    		</td>
+		    <td>&nbsp;</td>
+		  </tr>
+		</table>    
+		    </form></td>
+		    <td width="10%">&nbsp;</td>
+		  </tr>
+		  <tr >
+		    <td width="10%">&nbsp;</td>
+		    <td width="80%">&nbsp;</td>
+		    <td width="10%">&nbsp;</td>
+		  </tr>
+		</table>
+<%
+	}
+//有參數輸入才顯示表格
 if (u!=null||m!=null||f!=null||t!=null||s!=null){
+	//error check
 	if ((f!=null&&t==null)||(t!=null&&f==null)){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
@@ -280,15 +293,6 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		out.print("<font color='red'>日期必需輸入起及迄</font>");
 		return;
 	}
-        //20150713 mod
-    /* if(s!=null && !"".equals(s)){
-    	 try {  
-             Integer.parseInt(s);  
-         } catch (NumberFormatException e) {  
-        	 out.print("狀態代碼必須為數字");
-             return ;  
-         }  
-    } */
 	if(l!=null && !"".equals(l)){
 		try {  
             Integer.parseInt(l);  
@@ -297,6 +301,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
             return ;  
         }  
     }
+	
 	String sql="select s.userid,i.msgid,seq,schedule,phoneno,msgbody,tries,status,donetime,m.createtime,orgcode from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
 	String sql2="select count(*) c from smppuser s, messages m, msgitem i where s.userid=m.userid and i.msgid=m.msgid ";
 	
@@ -307,20 +312,12 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	if (m!=null && !"".equals(m)){
 		cc+="and i.msgid=?  ";
 	}
-	
-	
-	/*
-	if (r!=null){
-		cc+="and i.rid=?  ";
-	}
-	*/
   	if (f!=null && !"".equals(f)&&t!=null && !"".equals(t)){
 		cc+="and m.createtime >=? and m.createtime<=? ";
 		f=fromUser.format(fromInput.parse(f));
 		t=fromUser.format(fromInput.parse(t));
 		t=t.substring(0,8)+"235959";
 	}
-	
 	if (s!=null && !"".equals(s)){
 			cc+="and i.status in "+s+" ";
 	}
@@ -331,40 +328,31 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	Context env=(Context)ctx.lookup("java:comp/env");
 	DataSource ds =(DataSource)env.lookup("jdbc/SMPPDB");        
 	Connection conn = ds.getConnection();
-	//String [] statusmsg={"未發送","交換機已轉送","已送出","已到期","已刪除","無法送出","交換機已收到","未知","拒絕"};	
 	try {
-		
 		ps2 = conn.prepareStatement(sql2+cc);
-		
 		cc+=" order by s.userid,createtime desc,i.msgid";
 		
 		if (l!=null && !"".equals(l)){
 			if (!l.equals(""))
 				cc+=" limit ? ";
 		}
+		
 		ps = conn.prepareStatement(sql+cc);
-		
-		
+		//parameter setting
 		int pcount=1;
-//out.print(sql+cc+" order by s.userid,createtime desc,i.msgid");
-    if (u!=null && !"".equals(u)){
-			ps.setString(pcount,u);
-			ps2.setString(pcount,u);
-			pcount++;
+
+	    if (u!=null && !"".equals(u)){
+				ps.setString(pcount,u);
+				ps2.setString(pcount,u);
+				pcount++;
 		}
 
-    if (m!=null && !"".equals(m)){
+    	if (m!=null && !"".equals(m)){
 			ps.setString(pcount,m);
 			ps2.setString(pcount,m);
 			pcount++;
 		}
-		/*
-		if (r!=null){
-			ps.setString(pcount,r);
-			pcount++;
-		}
-		*/
-    if (f!=null && !"".equals(f) && t!=null && !"".equals(t)){
+    	if (f!=null && !"".equals(f) && t!=null && !"".equals(t)){
 			ps.setString(pcount,f);
 			ps2.setString(pcount,f);
 			pcount++;
@@ -372,15 +360,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			ps2.setString(pcount,t);
 			pcount++;
 		}
-		
-/* 	 if (s!=null && !"".equals(s)){
-			ps.setInt(pcount,Integer.parseInt(s));
-			ps2.setInt(pcount,Integer.parseInt(s)); 
-			pcount++;
-		}  */
-	
-	
-	if (l!=null && !"".equals(l)){
+		if (l!=null && !"".equals(l)){
 			ps.setInt(pcount,Integer.parseInt(l));
 			pcount++;
 		}
@@ -399,104 +379,103 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			rs = ps.executeQuery();
 		
 %>
-<table border="1" cellpadding="0" cellspacing="0" width="1383">
-	<tr>
-      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
-	  <td colspan="7"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
-	</tr>
-    <tr height="27">
-      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">序號</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訂單接收時間</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">預計發送日期</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">完成時間</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="111" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">手機號碼</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="60" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">狀態</font><u></u><u></u></span></p></td>
-      <td bgcolor="navy" width="256" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訊息</font><u></u><u></u></span></p></td>
-    </tr>
+	<table border="1" cellpadding="0" cellspacing="0" width="1383" id="result">
+		<tr>
+	      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
+		  <td colspan="7"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
+		</tr>
+	    <tr height="27">
+	      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">序號</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訂單接收時間</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">預計發送日期</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">完成時間</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="111" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">手機號碼</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="60" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">狀態</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="256" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訊息</font><u></u><u></u></span></p></td>
+	    </tr>
 <%
 		String rsMsgid="";
 		int fcount=0;
 		int scount=0;
 		int tcount=0;
 		if(rs!=null){
-		while (rs.next()){
-			if (rs.getString("msgid").equals(rsMsgid)){
-				if (!rsMsgid.equals("")){
+			while (rs.next()){
+				if (rs.getString("msgid").equals(rsMsgid)){
+					if (!rsMsgid.equals("")){
 %>
-  <tr>
-		<td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td align="right">發送失敗</td>
-    <td><%=fcount%></td>
-    <td>發送成功</td>
-    <td><%=scount%></td>
-  </tr>
+						  <tr>
+								<td>&nbsp;</td>
+						    <td>&nbsp;</td>
+						    <td>&nbsp;</td>
+						    <td>&nbsp;</td>
+						    <td>&nbsp;</td>
+						    <td align="right">發送失敗</td>
+						    <td><%=fcount%></td>
+						    <td>發送成功</td>
+						    <td><%=scount%></td>
+						  </tr>
 <%
+					}
+					rsMsgid=rs.getString("msgid");
+					fcount=0;
+					scount=0;
 				}
-				rsMsgid=rs.getString("msgid");
-				fcount=0;
-				scount=0;
-			}
-			fcount++;
-			scount++;
-			tcount++;
-			
-			
-			String donetime="";
-			 if(rs.getString("donetime")!=null&&!"".equals(rs.getString("donetime"))){
-				donetime=myFormat.format(fromUser.parse(rs.getString("donetime")));
-			} 
-			String createtime="";
-			if(rs.getString("createtime")!=null&&!"".equals(rs.getString("createtime"))){
-				createtime=myFormat.format(fromUser.parse(rs.getString("createtime")));
-			}
+				fcount++;
+				scount++;
+				tcount++;
+	
+				String donetime="";
+				 if(rs.getString("donetime")!=null&&!"".equals(rs.getString("donetime"))){
+					donetime=myFormat.format(fromUser.parse(rs.getString("donetime")));
+				} 
+				String createtime="";
+				if(rs.getString("createtime")!=null&&!"".equals(rs.getString("createtime"))){
+					createtime=myFormat.format(fromUser.parse(rs.getString("createtime")));
+				}
 			
 %>
-    <tr height="27">
-      <td nowrap="nowrap" width="331" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgid")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="117" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("orgcode")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("seq")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=createtime%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=donetime%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="111" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("phoneno")%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=map.get(rs.getInt("status"))%><u></u><u></u></span></p></td>
-      <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>
-    </tr>
+			    <tr height="27">
+			      <td nowrap="nowrap" width="331" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgid")%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="117" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("orgcode")%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("seq")%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=createtime%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=donetime%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="111" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("phoneno")%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="60" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=map.get(rs.getInt("status"))%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="256" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgbody")%><u></u><u></u></span></p></td>
+			    </tr>
 <%
-		}
+			}
 		}
 		if (!rsMsgid.equals("")){
 %>
-  <tr>
-		<td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td align="right">發送失敗</td>
-    <td><%=fcount%></td>
-    <td>發送成功</td>
-    <td><%=scount%></td>
-  </tr>
+			  <tr>
+					<td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td align="right">發送失敗</td>
+			    <td><%=fcount%></td>
+			    <td>發送成功</td>
+			    <td><%=scount%></td>
+			  </tr>
 <%
 		}
 %>
-  <tr>
+	<tr>
 		<td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td colspan="3">總計</td>
-    <td><%=tcount%></td>
-  </tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	    <td colspan="3">總計</td>
+	    <td><%=tcount%></td>
+	</tr>
 <%
 	} catch (SQLException sqle) {
 		rMsg="Query Exception:"+sqle.getMessage();
