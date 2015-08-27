@@ -448,7 +448,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			cell.setCellValue(total);
 			cell.setCellStyle(style1);
 			
-			sheet.addMergedRegion(new CellRangeAddress(rowCount-1,rowCount-1,cellCount,cellCount+7));
+			sheet.addMergedRegion(new CellRangeAddress(rowCount-1,rowCount-1,cellCount,cellCount+5));
 			cell = row.createCell(cellCount++);
 			cell.setCellValue(" ");
 			cell.setCellStyle(style1);
@@ -460,16 +460,17 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			cell.setCellValue("Message ID");
 			cell.setCellStyle(style1);
 			
-			cell = row.createCell(cellCount++);
+			//20150827 mark
+			/* cell = row.createCell(cellCount++);
 			cell.setCellValue("組織代碼");
 			cell.setCellStyle(style1);
 			
 			cell = row.createCell(cellCount++);
 			cell.setCellValue("序號");
-			cell.setCellStyle(style1);
+			cell.setCellStyle(style1); */
 			
 			cell = row.createCell(cellCount++);
-			cell.setCellValue("則數");
+			cell.setCellValue("收費則數");
 			cell.setCellStyle(style1);
 			
 			cell = row.createCell(cellCount++);
@@ -502,13 +503,14 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		<tr>
 	      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
 	      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
-		  <td colspan="8"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
+		  <td colspan="6"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">&nbsp;</font><u></u><u></u></span></p></td>
 		</tr>
 	    <tr height="27">
 	      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
-	      <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
-	      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">序號</font><u></u><u></u></span></p></td>
-	      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">則數</font><u></u><u></u></span></p></td>
+	      <!-- 20150827 mark -->
+	      <!-- <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
+	      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">序號</font><u></u><u></u></span></p></td> -->
+	      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">收費則數</font><u></u><u></u></span></p></td>
 	      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訂單接收時間</font><u></u><u></u></span></p></td>
 	      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">預計發送日期</font><u></u><u></u></span></p></td>
 	      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">完成時間</font><u></u><u></u></span></p></td>
@@ -528,7 +530,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 					if (!rsMsgid.equals("")){
 %>
 						  <tr>
-								<td>&nbsp;</td>
+							<td>&nbsp;</td>
 						    <td>&nbsp;</td>
 						    <td>&nbsp;</td>
 						    <td>&nbsp;</td>
@@ -565,11 +567,12 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 					cell = row.createCell(cellCount++);
 					cell.setCellValue(rs.getString("msgid"));
 					
-					cell = row.createCell(cellCount++);
+					//20150827 mark
+					/* cell = row.createCell(cellCount++);
 					cell.setCellValue(rs.getString("orgcode"));
 					
 					cell = row.createCell(cellCount++);
-					cell.setCellValue(rs.getString("seq"));
+					cell.setCellValue(rs.getString("seq")); */
 					
 					cell = row.createCell(cellCount++);
 					cell.setCellValue(rs.getString("sum"));
@@ -587,7 +590,8 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 					cell.setCellValue(rs.getString("phoneno"));
 					
 					cell = row.createCell(cellCount++);
-					cell.setCellValue(rs.getString("status"));
+					//cell.setCellValue(rs.getString("status"));
+					cell.setCellValue(map.get(rs.getInt("status")));
 					
 					cell = row.createCell(cellCount++);
 					cell.setCellValue(rs.getString("msgbody"));
@@ -597,8 +601,9 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 %>
 			    <tr  height="27">
 			      <td nowrap="nowrap" width="331" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("msgid")%><u></u><u></u></span></p></td>
-			      <td nowrap="nowrap" width="117" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("orgcode")%><u></u><u></u></span></p></td>
-			      <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("seq")%><u></u><u></u></span></p></td>
+			      <!-- 20150827 mark -->
+			      <%-- <td nowrap="nowrap" width="117" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("orgcode")%><u></u><u></u></span></p></td>
+			      <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("seq")%><u></u><u></u></span></p></td> --%>
 			      <td nowrap="nowrap" width="44" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("sum")%><u></u><u></u></span></p></td>
 			      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=createtime%><u></u><u></u></span></p></td>
 			      <td nowrap="nowrap" width="155" height="27"><p><span lang="EN-US" xml:lang="EN-US"><%=rs.getString("schedule")%><u></u><u></u></span></p></td>
@@ -616,7 +621,8 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			  <tr>
 					<td>&nbsp;</td>
 			    <td>&nbsp;</td>
-			    <td>&nbsp;</td>
+			    <!-- 20150827 mark-->
+			    <!-- <td>&nbsp;</td> -->
 			    <td>&nbsp;</td>
 			    <td>&nbsp;</td>
 			    <td align="right">發送失敗</td>
@@ -635,6 +641,7 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			row = sheet.createRow(rowCount++);
 			cellCount = 6;
 
+
 			cell = row.createCell(cellCount++);
 			cell.setCellValue("總計");
 			
@@ -646,10 +653,10 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 		<td>&nbsp;</td>
 	    <td>&nbsp;</td>
 	    <td>&nbsp;</td>
+	    <!-- <td>&nbsp;</td> -->
 	    <td>&nbsp;</td>
 	    <td>&nbsp;</td>
-	    <td>&nbsp;</td>
-	    <td colspan="3">總計</td>
+	    <td colspan="2">總計</td>
 	    <td><%=tcount%></td>
 	</tr>
 <%
