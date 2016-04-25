@@ -172,6 +172,12 @@ function inputClear(){
 	map.put(98,"傳送中");
 	map.put(99,"傳送中");
 	
+	SimpleDateFormat dd = new SimpleDateFormat("yyyy-MM-dd");
+	SimpleDateFormat td = new SimpleDateFormat("hh:mm a",Locale.US);
+	
+	String pred = dd.format(new java.util.Date());
+	String pret = td.format(td.parse("12:00 AM"))/*.replace("PM","下午").replace("AM","上午")*/;
+	
 	String rMsg="";
 	String pLog=(request.getParameter("pLog")!=null?request.getParameter("pLog"):"");
 	String m=request.getParameter("msgid")!=null?request.getParameter("msgid"):"";
@@ -186,7 +192,12 @@ function inputClear(){
 	SimpleDateFormat fromInput = new SimpleDateFormat("yyyy/MM/dd");
 	SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
-	SimpleDateFormat calFormat = new SimpleDateFormat("yyyy-MM-ddhh:mm a");
+	
+	
+	System.out.println(pred);
+	System.out.println(pret);
+	System.out.println(f);
+	
 	
 	String exportToExcel = request.getParameter("exportToExcel");
 	boolean excelMode= false;
@@ -276,9 +287,9 @@ function inputClear(){
 		  <tr>
 		    <td align="right"><label>建立日期</label></td>
 		    <td>
-		    	<input type="text" id="dfrom" name="dfrom" size="15" value="<%=f%>" readonly />(日期)
+		    	<input type="text" id="dfrom" name="dfrom" size="15" value="<%=f!=""?f:pred%>" readonly />(日期)
 		    	<!-- <input type="button" value="..." id="BTN" name="BTN" /> -->
-		    	<input type="text" id="tfrom" name="tfrom" size="15" value="<%=tf%>" readonly />(時間)
+		    	<input type="text" id="tfrom" name="tfrom" size="15" value="<%=tf!=""?tf:pret%>" readonly />(時間)
 				<!-- 
 				<script type="text/javascript">
 	        		new Calendar({
@@ -303,9 +314,9 @@ function inputClear(){
 		 <tr>
 		 	<td>&nbsp;</td>
 			<td>
-				<input type="text" id="dto" name="dto" size="15" value="<%=t%>"readonly/>(日期)
+				<input type="text" id="dto" name="dto" size="15" value="<%=t!=""?t:pred%>"readonly/>(日期)
 				<!-- <input type="button" value="..." id="BTN1" name="BTN1"/> -->
-				<input type="text" id="tto" name="tto" size="15" value="<%=tt%>" readonly />(時間)
+				<input type="text" id="tto" name="tto" size="15" value="<%=tt!=""?tt:pret%>" readonly />(時間)
 	<!-- 	    <script type="text/javascript">
 		        new Calendar({
 		            inputField: "dto",
@@ -404,14 +415,23 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 	
 	String cc="";
 	if (u!=null && !"".equals(u)){
+		
 		cc+="and s.userid='"+u+"' ";
 	}
 	if (m!=null && !"".equals(m)){
 		cc+="and i.msgid='"+m+"' ";
 	}
   	if (f!=null && !"".equals(f)&&t!=null && !"".equals(t)){
-  		f=fromUser.format(calFormat.parse(f+tf));
-		t=fromUser.format(calFormat.parse(t+tt));
+  		
+  		
+  		java.util.Date fdd = dd.parse(f);
+  		java.util.Date ftt = td.parse(tf/*.replace("AM","上午").replace("PM","下午")*/);
+  		f=fromUser.format(new java.util.Date(fdd.getTime()+ftt.getTime()+8*60*60*1000));
+  		
+  		java.util.Date tdd = dd.parse(t);
+  		java.util.Date ttt = td.parse(tt/*.replace("AM","上午").replace("PM","下午")*/);
+  		t=fromUser.format(new java.util.Date(tdd.getTime()+ttt.getTime()+8*60*60*1000));
+
 		cc+="and m.createtime >='"+f+"' and m.createtime<='"+t+"' ";
 		
 		//f=fromUser.format(fromInput.parse(f));
@@ -494,119 +514,127 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 			onePagenumber = 5000;
 		}
 		
+		String rsMsgid="";
+		int fcount=0;
+		int scount=0;
+		int tcount=0;
+		
+		if(excelMode){
+			rowCount = 0;
+			sheet = wb.createSheet();
+			row = sheet.createRow(rowCount++);
+			
+			HSSFCellStyle style1 = wb.createCellStyle();
+			style1.setFillForegroundColor(HSSFColor.BLUE.index);
+			style1.setFillPattern((short)1);
+
+			Font font = wb.createFont();
+	        font.setColor(HSSFColor.WHITE.index);
+			style1.setFont(font); 
+			
+			//style1.setFillBackgroundColor(bg)
+			row = sheet.createRow(rowCount++);
+			cellCount = 0;
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("Totla:");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(total);
+			cell.setCellStyle(style1);
+			
+			sheet.addMergedRegion(new CellRangeAddress(rowCount-1,rowCount-1,cellCount,cellCount+5));
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(" ");
+			cell.setCellStyle(style1);
+			
+			//****************
+			row = sheet.createRow(rowCount++);
+			cellCount = 0;
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("Message ID");
+			cell.setCellStyle(style1);
+			
+			//20150827 mark
+			/* cell = row.createCell(cellCount++);
+			cell.setCellValue("組織代碼");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("序號");
+			cell.setCellStyle(style1); */
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("收費則數");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("訂單接收時間");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("預計發送日期");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("完成時間");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("手機號碼");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("狀態");
+			cell.setCellStyle(style1);
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("訊息");
+			cell.setCellStyle(style1);
+			
+		}else{
+			
+%>
+		
+			<table border="1" cellpadding="0" cellspacing="0" width="1383" id="result">
+				<tr>
+			      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
+				  <td colspan="6"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">page:<%= pn %></font><u></u><u></u></span></p></td>
+				</tr>
+			    <tr height="27">
+			      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
+			      <!-- 20150827 mark -->
+			      <!-- <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">序號</font><u></u><u></u></span></p></td> -->
+			      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">收費則數</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訂單接收時間</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">預計發送日期</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">完成時間</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="111" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">手機號碼</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="60" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">狀態</font><u></u><u></u></span></p></td>
+			      <td bgcolor="navy" width="256" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訊息</font><u></u><u></u></span></p></td>
+			    </tr>
+<%
+		}
 		for( ;(i)*onePagenumber<total ;i++ ){
 			//以pLog為記錄是否為首次登入網頁，20141125 add 首次進入時不預載資料
 			if(pLog!=null && pLog!=""){
 				String ssql = sql+" "+cc+" limit "+onePagenumber+" offset "+((i)*onePagenumber);
 				//out.print(ssql);
 				rs = st.executeQuery(ssql);
-			}
 				
-			if(excelMode){
-				rowCount = 0;
-				sheet = wb.createSheet();
-				row = sheet.createRow(rowCount++);
-				
-				HSSFCellStyle style1 = wb.createCellStyle();
-				style1.setFillForegroundColor(HSSFColor.BLUE.index);
-				style1.setFillPattern((short)1);
-	
-				Font font = wb.createFont();
-		        font.setColor(HSSFColor.WHITE.index);
-				style1.setFont(font); 
-				
-				//style1.setFillBackgroundColor(bg)
-				row = sheet.createRow(rowCount++);
-				cellCount = 0;
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("Totla:");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue(total);
-				cell.setCellStyle(style1);
-				
-				sheet.addMergedRegion(new CellRangeAddress(rowCount-1,rowCount-1,cellCount,cellCount+5));
-				cell = row.createCell(cellCount++);
-				cell.setCellValue(" ");
-				cell.setCellStyle(style1);
-				
-				//****************
-				row = sheet.createRow(rowCount++);
-				cellCount = 0;
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("Message ID");
-				cell.setCellStyle(style1);
-				
-				//20150827 mark
-				/* cell = row.createCell(cellCount++);
-				cell.setCellValue("組織代碼");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("序號");
-				cell.setCellStyle(style1); */
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("收費則數");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("訂單接收時間");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("預計發送日期");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("完成時間");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("手機號碼");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("狀態");
-				cell.setCellStyle(style1);
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("訊息");
-				cell.setCellStyle(style1);
-				
-			}else{
-				i = total;
-%>
+				%>
 			
-				<table border="1" cellpadding="0" cellspacing="0" width="1383" id="result">
-					<tr>
-				      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Totla:</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white"><%= total %></font><u></u><u></u></span></p></td>
-					  <td colspan="6"    bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">page:<%= pn %></font><u></u><u></u></span></p></td>
-					</tr>
-				    <tr height="27">
-				      <td bgcolor="navy" width="331" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">Message ID</font><u></u><u></u></span></p></td>
-				      <!-- 20150827 mark -->
-				      <!-- <td bgcolor="navy" width="117" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">組織代碼</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">序號</font><u></u><u></u></span></p></td> -->
-				      <td bgcolor="navy" width="44" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">收費則數</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訂單接收時間</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">預計發送日期</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="155" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">完成時間</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="111" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">手機號碼</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="60" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">狀態</font><u></u><u></u></span></p></td>
-				      <td bgcolor="navy" width="256" height="27"><p align="center"><span lang="EN-US" xml:lang="EN-US"><font color="white">訊息</font><u></u><u></u></span></p></td>
-				    </tr>
-<%
+				
+				<% 
 			}
+				
+			i = total;
 
 				//rs = ps.executeQuery();
 			
-			String rsMsgid="";
-			int fcount=0;
-			int scount=0;
-			int tcount=0;
+			
 
 			if(rs!=null){
 				while (rs.next()){
@@ -716,35 +744,36 @@ if (u!=null||m!=null||f!=null||t!=null||s!=null){
 				  </tr>
 <%
 			}
-			if(excelMode){
-				
-				HSSFCellStyle style1 = wb.createCellStyle();
-				style1.setFillForegroundColor(HSSFColor.BLUE.index);
-				style1.setFillPattern((short)1);
-				
-				row = sheet.createRow(rowCount++);
-				cellCount = 6;
-	
-	
-				cell = row.createCell(cellCount++);
-				cell.setCellValue("總計");
-				
-				cell = row.createCell(cellCount++);
-				cell.setCellValue(tcount);
-			}else{
+			
+		}
+		if(excelMode){
+			
+			HSSFCellStyle style1 = wb.createCellStyle();
+			style1.setFillForegroundColor(HSSFColor.BLUE.index);
+			style1.setFillPattern((short)1);
+			
+			row = sheet.createRow(rowCount++);
+			cellCount = 6;
+
+
+			cell = row.createCell(cellCount++);
+			cell.setCellValue("總計");
+			
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(tcount);
+		}else{
 %>
-				<tr>
-					<td>&nbsp;</td>
-				    <td>&nbsp;</td>
-				    <td>&nbsp;</td>
-				    <!-- <td>&nbsp;</td> -->
-				    <td>&nbsp;</td>
-				    <td>&nbsp;</td>
-				    <td colspan="2">總計</td>
-				    <td><%=tcount%></td>
-				</tr>
+			<tr>
+				<td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <!-- <td>&nbsp;</td> -->
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td colspan="2">總計</td>
+			    <td><%=tcount%></td>
+			</tr>
 <%
-			}
 		}
 	} catch (SQLException sqle) {
 		rMsg="Query Exception:"+sqle.getMessage();
